@@ -1,21 +1,37 @@
 #!/bin/bash
 
-# Location of the imagemagick portable executable
-magicPath="/home/brandy/Desktop"
+# Get passed in args
+while getopts f:F:p:b: arg; do
+    case "${arg}" in
+        f)file=${OPTARG};;
+        F)folder=${OPTARG};;
+        b)borderAmount=${OPTARG};;
+        p)magicPath=${OPTARG};;
+    esac
+done
 
-# How much border to give. 0.1 = 10%
-borderAmount="0.05"
+# Check imagemagick is installed/a path for it is supplied, otherwise exit
+if [ ! -n "$magicPath" ] && ! command -v imagemagick >/dev/null 2>&1; then
+    echo "Couldn't find imagemagick installed"
+    echo "No path for imagemagick supplied. Exiting..."
+    exit 1
+fi
 
-for f in ./*.jpg; do
-    echo "Processing: ${f}"
+# If no border amount given, provide default amount
+if [ ! -n "$borderAmount" ]; then
+    # How much border to give. 0.05 = 5%
+    borderAmount="0.05"
+fi
+
+do_processing () {
+    echo "Processing: ${1}"
     # Separate filename from extension
-    # Terrible design, only works with 3 char extensions
-    filename=$(echo "$f" | awk '{ print substr( $0, 1, length($0)-4 ) }')
-    ext=$(echo "$f" | awk '{ print substr( $0, length($0)-3, length($0) ) }')
+    filename=$(echo "${1%.*}")
+    ext=$(echo "${1##*.}")
 
     # Use imagemagick to retrieve image width & height
-    width=$($magicPath/magick identify -format "%[w]" "$f")
-    height=$($magicPath/magick identify -format "%[h]" "$f")
+    width=$($magicPath/magick identify -format "%[w]" "$1")
+    height=$($magicPath/magick identify -format "%[h]" "$1")
 
     # Use the short edge for the border size calculation
     if [ $width -ge $height ]; then
@@ -25,6 +41,15 @@ for f in ./*.jpg; do
     fi
 
     # Add a white border, save the image with _border in the filename
-    $($magicPath/magick convert "$f" -bordercolor white -border $borderSize "${filename}_border${ext}")
+    $($magicPath/magick convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+}
 
-done
+# If we're dealing with folder, process over every file within
+if [ -n "$folder" ]; then
+    for f in ${folder}/*.*; do
+        do_processing $f
+    done
+# If just 1 file, process it
+elif [ -n "$file" ]; then
+    do_processing $file
+fi
