@@ -32,7 +32,7 @@ done
 # Check imagemagick is installed/a path for it is supplied, otherwise exit
 # Here we just assume that if the terminal has access to 'convert' and 'identify',
 # imagemagick is probably installed on the machine
-if [ -z "$magicPath" ] && ! command -v convert >/dev/null 2>&1 && ! command -v identify >/dev/null 2>&1; then
+if [ -z "$magicPath" ] && [ ! command -v convert >/dev/null 2>&1 ] && [ ! command -v identify >/dev/null 2>&1 ]; then
     echo "Couldn't find imagemagick installed"
     echo "No path for imagemagick supplied. Exiting..."
     exit 1
@@ -62,7 +62,7 @@ do_processing () {
 
     # Use the long edge for the border size calculation if useLong is true,
     # otherwise use the short edge
-    if [ "$useLong" = true ]; then
+    if [ -n "$useLong" ]; then
         if [ $width -ge $height ]; then
             borderSize=$(printf %2.0f $(echo "$width*$borderAmount" | bc -l))
         else
