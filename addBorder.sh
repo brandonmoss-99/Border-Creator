@@ -11,7 +11,9 @@ while getopts f:F:p:b: arg; do
 done
 
 # Check imagemagick is installed/a path for it is supplied, otherwise exit
-if [ ! -n "$magicPath" ] && ! command -v imagemagick >/dev/null 2>&1; then
+# Here we just assume that if the terminal has access to 'convert' and 'identify',
+# imagemagick is probably installed on the machine
+if [ ! -n "$magicPath" ] && ! command -v convert >/dev/null 2>&1 && ! command -v identify >/dev/null 2>&1; then
     echo "Couldn't find imagemagick installed"
     echo "No path for imagemagick supplied. Exiting..."
     exit 1
@@ -30,8 +32,13 @@ do_processing () {
     ext=$(echo "${1##*.}")
 
     # Use imagemagick to retrieve image width & height
-    width=$($magicPath/magick identify -format "%[w]" "$1")
-    height=$($magicPath/magick identify -format "%[h]" "$1")
+    if [ -n "$magicPath" ]; then
+        width=$($magicPath/magick identify -format "%[w]" "$1")
+        height=$($magicPath/magick identify -format "%[h]" "$1")
+    else
+        width=$(identify -format "%[w]" "$1")
+        height=$(identify -format "%[h]" "$1")
+    fi
 
     # Use the short edge for the border size calculation
     if [ $width -ge $height ]; then
@@ -41,7 +48,11 @@ do_processing () {
     fi
 
     # Add a white border, save the image with _border in the filename
-    $($magicPath/magick convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+    if [ -n "$magicPath" ]; then
+        $($magicPath/magick convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+    else
+        $(convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+    fi
 }
 
 # If we're dealing with folder, process over every file within
