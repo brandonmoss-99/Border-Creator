@@ -1,7 +1,22 @@
 #!/bin/bash
 
+getUsage() {
+    cat <<EOF
+Usage: addBorder [<options>]
+
+-f <filepath>       Use the image at the given filepath
+-F <folderpath>     Use the images in the given folderpath
+-b <amount>         How large a border to add, in % of the image size.
+                    Defaults to 5% of the short edge
+-p <path>           The path to the imagemagick executable, if using
+                    a portable executable of it
+-l                  Use the long edge instead for the % calculation
+-h                  Display this help message
+EOF
+}
+
 # Get passed in args
-while getopts f:F:p:b:l arg; do
+while getopts f:F:p:b:lh arg; do
     case "${arg}" in
         f)file=${OPTARG};;
         F)folder=${OPTARG};;
@@ -9,23 +24,26 @@ while getopts f:F:p:b:l arg; do
         p)magicPath=${OPTARG};;
         # Should we use the short or long edge for percent calculation?
         l)useLong=true;;
+        h)getUsage;;
+        *)getUsage;;
     esac
 done
 
 # Check imagemagick is installed/a path for it is supplied, otherwise exit
 # Here we just assume that if the terminal has access to 'convert' and 'identify',
 # imagemagick is probably installed on the machine
-if [ ! -n "$magicPath" ] && ! command -v convert >/dev/null 2>&1 && ! command -v identify >/dev/null 2>&1; then
+if [ -z "$magicPath" ] && ! command -v convert >/dev/null 2>&1 && ! command -v identify >/dev/null 2>&1; then
     echo "Couldn't find imagemagick installed"
     echo "No path for imagemagick supplied. Exiting..."
     exit 1
 fi
 
 # If no border amount given, provide default amount
-if [ ! -n "$borderAmount" ]; then
+if [ -z "$borderAmount" ]; then
     # How much border to give. 0.05 = 5%
     borderAmount="0.05"
 fi
+
 
 do_processing () {
     echo "Processing: ${1}"
@@ -66,8 +84,11 @@ do_processing () {
     fi
 }
 
+# If no file or folder was given, print usage
+if [ -z "$folder" ] && [ -z "$file" ]; then
+    getUsage
 # If we're dealing with folder, process over every file within
-if [ -n "$folder" ]; then
+elif [ -n "$folder" ]; then
     for f in ${folder}/*.*; do
         do_processing $f
     done
