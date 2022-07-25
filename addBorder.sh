@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # Get passed in args
-while getopts f:F:p:b: arg; do
+while getopts f:F:p:b:l arg; do
     case "${arg}" in
         f)file=${OPTARG};;
         F)folder=${OPTARG};;
         b)borderAmount=${OPTARG};;
         p)magicPath=${OPTARG};;
+        # Should we use the short or long edge for percent calculation?
+        l)useLong=true;;
     esac
 done
 
@@ -40,11 +42,20 @@ do_processing () {
         height=$(identify -format "%[h]" "$1")
     fi
 
-    # Use the short edge for the border size calculation
-    if [ $width -ge $height ]; then
-        borderSize=$(printf %2.0f $(echo "$height*$borderAmount" | bc -l))
+    # Use the long edge for the border size calculation if useLong is true,
+    # otherwise use the short edge
+    if [ "$useLong" = true ]; then
+        if [ $width -ge $height ]; then
+            borderSize=$(printf %2.0f $(echo "$width*$borderAmount" | bc -l))
+        else
+            borderSize=$(printf %2.0f $(echo "$height*$borderAmount" | bc -l))
+        fi
     else
-        borderSize=$(printf %2.0f $(echo "$width*$borderAmount" | bc -l))
+        if [ $width -ge $height ]; then
+            borderSize=$(printf %2.0f $(echo "$height*$borderAmount" | bc -l))
+        else
+            borderSize=$(printf %2.0f $(echo "$width*$borderAmount" | bc -l))
+        fi
     fi
 
     # Add a white border, save the image with _border in the filename
