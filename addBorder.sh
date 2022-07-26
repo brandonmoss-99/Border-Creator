@@ -8,6 +8,8 @@ Usage: addBorder [<options>]
 -F <folderpath>     Use the images in the given folderpath
 -b <amount>         How large a border to add, in % of the image size.
                     Defaults to 5% of the short edge
+-c <colour>         Colour to use on the border, either as a word
+                    "cyan", or a hex code "#00ffff"
 -p <path>           The path to the imagemagick executable, if using
                     a portable executable of it
 -l                  Use the long edge instead for the % calculation
@@ -16,11 +18,12 @@ EOF
 }
 
 # Get passed in args
-while getopts f:F:p:b:lh arg; do
+while getopts f:F:p:b:c:lh arg; do
     case "${arg}" in
         f)file=${OPTARG};;
         F)folder=${OPTARG};;
         b)borderAmount=${OPTARG};;
+        c)colour=${OPTARG};;
         p)magicPath=${OPTARG};;
         # Should we use the short or long edge for percent calculation?
         l)useLong=true;;
@@ -42,6 +45,11 @@ fi
 if [ -z "$borderAmount" ]; then
     # How much border to give. 0.05 = 5%
     borderAmount="0.05"
+fi
+
+# If no colour given, set colour to white
+if [ -z "$colour" ]; then
+    colour="white"
 fi
 
 
@@ -78,9 +86,9 @@ do_processing () {
 
     # Add a white border, save the image with _border in the filename
     if [ -n "$magicPath" ]; then
-        $($magicPath convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+        $($magicPath convert "$1" -bordercolor $colour -border $borderSize "${filename}_border.${ext}")
     else
-        $(convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+        $(convert "$1" -bordercolor $colour -border $borderSize "${filename}_border.${ext}")
     fi
 }
 

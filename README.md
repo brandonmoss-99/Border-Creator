@@ -16,6 +16,8 @@ Can then run it as `addBorder.sh`, with the following options:
 
 `-b <amount>`: How large a border to add, in % of the image size. Defaults to 5% of the short edge
 
+`-c <colour>`: Colour to use on the border, either as a word "cyan", or a hex code "#00ffff"
+
 `-p <path>`: The path to the imagemagick executable, if using a portable executable of it
 
 `-l`: Use the long edge instead for the % calculation
