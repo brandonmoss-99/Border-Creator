@@ -53,8 +53,8 @@ do_processing () {
 
     # Use imagemagick to retrieve image width & height
     if [ -n "$magicPath" ]; then
-        width=$($magicPath/magick identify -format "%[w]" "$1")
-        height=$($magicPath/magick identify -format "%[h]" "$1")
+        width=$($magicPath identify -format "%[w]" "$1")
+        height=$($magicPath identify -format "%[h]" "$1")
     else
         width=$(identify -format "%[w]" "$1")
         height=$(identify -format "%[h]" "$1")
@@ -78,7 +78,7 @@ do_processing () {
 
     # Add a white border, save the image with _border in the filename
     if [ -n "$magicPath" ]; then
-        $($magicPath/magick convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
+        $($magicPath convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
     else
         $(convert "$1" -bordercolor white -border $borderSize "${filename}_border.${ext}")
     fi
