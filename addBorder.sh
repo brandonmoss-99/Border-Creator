@@ -43,8 +43,8 @@ fi
 
 # If no border amount given, provide default amount
 if [ -z "$borderAmount" ]; then
-    # How much border to give. 0.05 = 5%
-    borderAmount="0.05"
+    # How much border to give. 5 = 5%
+    borderAmount="5"
 fi
 
 # If no colour given, set colour to white
@@ -72,19 +72,19 @@ do_processing () {
     # otherwise use the short edge
     if [ -n "$useLong" ]; then
         if [ $width -ge $height ]; then
-            borderSize=$(printf %2.0f $(echo "$width*$borderAmount" | bc -l))
+            borderSize=$(printf %2.0f $(echo "$width*($borderAmount*0.01)" | bc -l))
         else
-            borderSize=$(printf %2.0f $(echo "$height*$borderAmount" | bc -l))
+            borderSize=$(printf %2.0f $(echo "$height*($borderAmount*0.01)" | bc -l))
         fi
     else
         if [ $width -ge $height ]; then
-            borderSize=$(printf %2.0f $(echo "$height*$borderAmount" | bc -l))
+            borderSize=$(printf %2.0f $(echo "$height*($borderAmount*0.01)" | bc -l))
         else
-            borderSize=$(printf %2.0f $(echo "$width*$borderAmount" | bc -l))
+            borderSize=$(printf %2.0f $(echo "$width*($borderAmount*0.01)" | bc -l))
         fi
     fi
 
-    # Add a white border, save the image with _border in the filename
+    # Add the border, save the image with _border in the filename
     if [ -n "$magicPath" ]; then
         $($magicPath convert "$1" -bordercolor $colour -border $borderSize "${filename}_border.${ext}")
     else
