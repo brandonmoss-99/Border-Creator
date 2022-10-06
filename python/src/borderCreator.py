@@ -90,7 +90,11 @@ if __name__ == '__main__':
         # For each file in the folder, if it's in imagemagick's supported
         # formats, process it
         for f in os.listdir(folder):
-            ext = f.rsplit('.', 1)[1]
+            nameSplit = f.rsplit('.', 1)
+            ext = ""
+            # Check the file is not a directory (with no extension)
+            if(len(nameSplit) > 1):
+                ext = nameSplit[1]
             
             if ext.upper() in supportedFormats:
                 # Make sure path is in an OS friendly format
