@@ -1,6 +1,8 @@
 ## Prerequisites
 Make sure both Python 3 and Pip are installed
 
+Install the required dependencies, `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
+
 ## Usage
 Run the script as `python borderCreator.py` or `python3 borderCreator.py`, with the following options:
 
