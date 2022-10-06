@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "python"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "brandonmoss-99"
