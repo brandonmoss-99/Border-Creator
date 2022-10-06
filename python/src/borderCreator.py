@@ -6,7 +6,7 @@ import getopt, sys, os
 
 def getUsage():
     print('''
-Usage: addBorder [<options>]
+Usage: python borderCreator.py [<options>]
 
 -f <filepath>       Use the image at the given filepath
 -F <folderpath>     Use the images in the given folderpath
