@@ -21,7 +21,7 @@ jobs:
       - run: pip install pyinstaller
       
       - name: Build Executable
-        run: pyinstaller python/src/borderCreator.py
+        run: pyinstaller python/src/borderCreator.py -F --distpath python/src/dist/
       
       - uses: actions/upload-artifact@v3
         with:
