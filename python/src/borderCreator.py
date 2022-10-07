@@ -84,7 +84,10 @@ if __name__ == '__main__':
     if colour is None:
         colour="white"
 
-    if folder is not None or file is not None:
+    if file is not None:
+        process(file)
+    
+    elif folder is not None:
         threads = []
 
         # For each file in the folder, if it's in imagemagick's supported
@@ -108,6 +111,7 @@ if __name__ == '__main__':
         # Wait until all the threads are finished
         for t in threads:
             t.join()
-
-    elif file is not None:
-        process(file)
+    
+    else:
+        print("No file/folder specified!")
+        getUsage()
