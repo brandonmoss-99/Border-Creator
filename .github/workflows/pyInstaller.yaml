@@ -26,4 +26,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Python Executable
-          path: python/dist/*
+          path: python/src/dist/*
