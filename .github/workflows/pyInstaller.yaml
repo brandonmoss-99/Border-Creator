@@ -7,8 +7,8 @@ on:
       - add-pyinstaller-ci
 
 jobs:
-  createExecutable:
-    name: Create Executable
+  createLinuxExecutable:
+    name: Create Linux Executable
     runs-on: ubuntu-latest
 
     steps:
@@ -21,9 +21,30 @@ jobs:
       - run: pip install pyinstaller
       
       - name: Build Executable
-        run: pyinstaller python/src/borderCreator.py -F --distpath python/src/dist/
+        run: pyinstaller python/src/borderCreator.py -F --distpath python/src/dist/linux/
       
       - uses: actions/upload-artifact@v3
         with:
-          name: Python Executable
-          path: python/src/dist/*
+          name: Linux release
+          path: python/src/dist/linux/*
+    
+  createWindowsExecutable:
+    name: Create Windows Executable
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip' # cache pip dependencies
+      - run: pip install -r python/requirements.txt
+      - run: pip install pyinstaller
+      
+      - name: Build Executable
+        run: pyinstaller python/src/borderCreator.py -F --distpath python/src/dist/windows/
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Windows release
+          path: python/src/dist/windows/*
