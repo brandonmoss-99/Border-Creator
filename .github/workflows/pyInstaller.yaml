@@ -20,8 +20,8 @@ jobs:
       - run: pip install -r python/requirements.txt
       - run: pip install pyinstaller
       
-      - name: Build Executable with PyInstaller
-        run: pyinstaller python/src/
+      - name: Build Executable
+        run: pyinstaller python/src/borderCreator.py
       
       - uses: actions/upload-artifact@v3
         with:
