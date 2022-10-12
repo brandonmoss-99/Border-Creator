@@ -1,16 +1,21 @@
 from wand.image import Image
 from wand.color import Color
+from wand.version import formats
+
+from threading import Thread
+import os
 
 # Do the image processing
 def process(path, conf):
-    print(f"Processing {path}")
+    osPath = os.path.abspath(path)
+    print(f"Processing {osPath}")
     # Separate filename from extension
-    fNameSplit = path.rsplit('.', 1)
+    fNameSplit = osPath.rsplit('.', 1)
     filename = fNameSplit[0]
     ext = fNameSplit[1]
 
     # Open the image and do the processing
-    with Image(filename = path) as toProcess:
+    with Image(filename = osPath) as toProcess:
         width = toProcess.width
         height = toProcess.height
 
@@ -24,3 +29,37 @@ def process(path, conf):
         # Add the border, save the image with _border in the filename
         toProcess.border(color = Color(conf.colour), width = borderSize, height = borderSize)
         toProcess.save(filename = filename + "_border." + ext)
+
+
+def processFile(conf):
+    process(conf.filePath, conf)
+
+
+def processDir(conf):
+    # Imagemagick supported formats
+    supportedFormats = formats('*')
+
+    threads = []
+
+    # For each file in the folder, if it's in imagemagick's supported
+    # formats, process it
+    osDirPath = os.path.abspath(conf.dirPath)
+    for f in os.listdir(osDirPath):
+        nameSplit = f.rsplit('.', 1)
+        ext = ""
+        # Check the file is not a directory (with no extension)
+        if(len(nameSplit) > 1):
+            ext = nameSplit[1]
+        
+        if ext.upper() in supportedFormats:
+            # Make sure path is in an OS friendly format
+            path = os.path.join(conf.dirPath,f)
+
+            # Create & run a new thread to process the image
+            t = Thread(target = process, args = (path,conf,))
+            threads.append(t)
+            t.start()
+
+    # Wait until all the threads are finished
+    for t in threads:
+        t.join()
