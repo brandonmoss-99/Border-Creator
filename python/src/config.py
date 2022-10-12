@@ -1,5 +1,3 @@
-import os
-
 class Config:
     def __init__(self, cParams: dict):
         self.filePath: str = cParams.get("file", None)
