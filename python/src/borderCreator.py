@@ -5,21 +5,7 @@ from threading import Thread
 import getopt, sys, os
 
 from config import Config
-
-def getUsage():
-    print('''
-Usage: borderCreator<extension> [<options>]
-
--f <filepath>       Use the image at the given filepath
--F <folderpath>     Use the images in the given folderpath
--b <amount>         How large a border to add, in % of the image size.
-                    Defaults to 5% of the short edge
--c <colour>         Colour to use on the border, either as a word
-                    "cyan", or a hex code "#00ffff"
--l                  Use the long edge instead for the % calculation
--h                  Display this help message
-''')
-    sys.exit(0)
+import usage
 
 # Do the image processing
 def process(path):
@@ -70,9 +56,11 @@ if __name__ == '__main__':
             elif opt in ['-l']:
                 cParams["useLong"] = True
             elif opt in ['-h']:
-                getUsage()
+                usage.getUsage()
+                sys.exit(0)
     except:
-        getUsage()
+        usage.getUsage()
+        sys.exit(0)
 
     conf: Config = Config(cParams)
 
@@ -114,4 +102,5 @@ if __name__ == '__main__':
     
     else:
         print("No file/folder specified!")
-        getUsage()
+        usage.getUsage()
+        sys.exit(0)
