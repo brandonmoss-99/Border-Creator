@@ -64,14 +64,6 @@ if __name__ == '__main__':
 
     conf: Config = Config(cParams)
 
-    # If no border amount given, provide default amount
-    if conf.borderAmount is None:
-        borderAmount = 5
-
-    # If no colour given, set colour to white
-    if conf.colour is None:
-        colour="white"
-
     if conf.filePath is not None:
         process(conf.filePath)
     
