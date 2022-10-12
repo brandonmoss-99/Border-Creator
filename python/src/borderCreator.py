@@ -4,6 +4,8 @@ from wand.version import formats
 from threading import Thread
 import getopt, sys, os
 
+from config import Config
+
 def getUsage():
     print('''
 Usage: borderCreator<extension> [<options>]
@@ -34,65 +36,63 @@ def process(path):
 
         # Use the long edge for the border size calculation if useLong is true,
         # otherwise use the short edge
-        if useLong:
-            borderSize = int(width * (borderAmount)*0.01) if width >= height else int(height * (borderAmount)*0.01)
+        if conf.useLong:
+            borderSize = int(width * (conf.borderAmount)*0.01) if width >= height else int(height * (conf.borderAmount)*0.01)
         else:
-            borderSize = int(height * (borderAmount)*0.01) if width >= height else int(width * (borderAmount)*0.01)
+            borderSize = int(height * (conf.borderAmount)*0.01) if width >= height else int(width * (conf.borderAmount)*0.01)
         
         # Add the border, save the image with _border in the filename
-        toProcess.border(color = Color(colour), width = borderSize, height = borderSize)
+        toProcess.border(color = Color(conf.colour), width = borderSize, height = borderSize)
         toProcess.save(filename = filename + "_border." + ext)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     # Get all but the first arg from the command line
     argv = sys.argv[1:]
 
-    file = None
-    folder = None
-    borderAmount = None
-    colour = None
-    useLong = False
-
     # Imagemagick supported formats
     supportedFormats = formats('*')
+
+    cParams: dict = {}
 
     try:
         opts, args = getopt.getopt(argv, shortopts="f:F:p:b:c:lh")
 
         for opt, arg in opts:
             if opt in ['-f']:
-                file = arg
+                cParams["file"] = arg
             elif opt in ['-F']:
-                folder = arg
+                cParams["dir"] = arg
             elif opt in ['-b']:
-                borderAmount = int(arg)
+                cParams["border"] = int(arg)
             elif opt in ['-c']:
-                colour = arg
+                cParams["colour"] = arg
             elif opt in ['-l']:
-                useLong = True
+                cParams["useLong"] = True
             elif opt in ['-h']:
                 getUsage()
     except:
         getUsage()
 
+    conf: Config = Config(cParams)
+
     # If no border amount given, provide default amount
-    if borderAmount is None:
+    if conf.borderAmount is None:
         borderAmount = 5
 
     # If no colour given, set colour to white
-    if colour is None:
+    if conf.colour is None:
         colour="white"
 
-    if file is not None:
-        process(file)
+    if conf.filePath is not None:
+        process(conf.filePath)
     
-    elif folder is not None:
+    elif conf.dirPath is not None:
         threads = []
 
         # For each file in the folder, if it's in imagemagick's supported
         # formats, process it
-        for f in os.listdir(folder):
+        for f in os.listdir(conf.dirPath):
             nameSplit = f.rsplit('.', 1)
             ext = ""
             # Check the file is not a directory (with no extension)
@@ -101,7 +101,7 @@ if __name__ == '__main__':
             
             if ext.upper() in supportedFormats:
                 # Make sure path is in an OS friendly format
-                path = os.path.join(folder,f)
+                path = os.path.join(conf.folderPath,f)
 
                 # Create & run a new thread to process the image
                 t = Thread(target = process, args = (path,))
