@@ -1,41 +1,16 @@
 from wand.version import formats
 from threading import Thread
-import getopt, sys, os
+import sys, os
 
 from config import Config
-import usage, processor
+import usage, processor, argParser
 
 if __name__ == '__main__':    
-    # Get all but the first arg from the command line
-    argv = sys.argv[1:]
+    # Get all but the first arg from the command line, and create config
+    conf: Config = Config(argParser.createConfig(sys.argv[1:]))
 
     # Imagemagick supported formats
     supportedFormats = formats('*')
-
-    cParams: dict = {}
-
-    try:
-        opts, args = getopt.getopt(argv, shortopts="f:F:p:b:c:lh")
-
-        for opt, arg in opts:
-            if opt in ['-f']:
-                cParams["file"] = arg
-            elif opt in ['-F']:
-                cParams["dir"] = arg
-            elif opt in ['-b']:
-                cParams["border"] = int(arg)
-            elif opt in ['-c']:
-                cParams["colour"] = arg
-            elif opt in ['-l']:
-                cParams["useLong"] = True
-            elif opt in ['-h']:
-                usage.getUsage()
-                sys.exit(0)
-    except:
-        usage.getUsage()
-        sys.exit(0)
-
-    conf: Config = Config(cParams)
 
     if conf.filePath is not None:
         processor.process(conf.filePath, conf)
