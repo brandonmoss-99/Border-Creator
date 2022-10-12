@@ -19,16 +19,19 @@ def process(path, conf):
         width = toProcess.width
         height = toProcess.height
 
-        # Use the long edge for the border size calculation if useLong is true,
-        # otherwise use the short edge
-        if conf.useLong:
-            borderSize = int(width * (conf.borderAmount)*0.01) if width >= height else int(height * (conf.borderAmount)*0.01)
-        else:
-            borderSize = int(height * (conf.borderAmount)*0.01) if width >= height else int(width * (conf.borderAmount)*0.01)
-        
         # Add the border, save the image with _border in the filename
+        borderSize = calculateBorderSize(conf, width, height)
         toProcess.border(color = Color(conf.colour), width = borderSize, height = borderSize)
         toProcess.save(filename = filename + "_border." + ext)
+
+
+def calculateBorderSize(conf, width, height) -> int:
+    # Use the long edge for the border size calculation if useLong is true,
+    # otherwise use the short edge
+    if conf.useLong:
+        return int(width * (conf.borderAmount) * 0.01) if width >= height else int(height * (conf.borderAmount) * 0.01)
+    else:
+        return int(height * (conf.borderAmount) * 0.01) if width >= height else int(width * (conf.borderAmount) * 0.01)
 
 
 def processFile(conf):
