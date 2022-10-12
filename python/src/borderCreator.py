@@ -1,36 +1,9 @@
-from wand.image import Image
-from wand.color import Color
 from wand.version import formats
 from threading import Thread
 import getopt, sys, os
 
 from config import Config
-import usage
-
-# Do the image processing
-def process(path):
-    print(f"Processing {path}")
-    # Separate filename from extension
-    fNameSplit = path.rsplit('.', 1)
-    filename = fNameSplit[0]
-    ext = fNameSplit[1]
-
-    # Open the image and do the processing
-    with Image(filename = path) as toProcess:
-        width = toProcess.width
-        height = toProcess.height
-
-        # Use the long edge for the border size calculation if useLong is true,
-        # otherwise use the short edge
-        if conf.useLong:
-            borderSize = int(width * (conf.borderAmount)*0.01) if width >= height else int(height * (conf.borderAmount)*0.01)
-        else:
-            borderSize = int(height * (conf.borderAmount)*0.01) if width >= height else int(width * (conf.borderAmount)*0.01)
-        
-        # Add the border, save the image with _border in the filename
-        toProcess.border(color = Color(conf.colour), width = borderSize, height = borderSize)
-        toProcess.save(filename = filename + "_border." + ext)
-
+import usage, processor
 
 if __name__ == '__main__':    
     # Get all but the first arg from the command line
@@ -65,7 +38,7 @@ if __name__ == '__main__':
     conf: Config = Config(cParams)
 
     if conf.filePath is not None:
-        process(conf.filePath)
+        processor.process(conf.filePath, conf)
     
     elif conf.dirPath is not None:
         threads = []
@@ -84,7 +57,7 @@ if __name__ == '__main__':
                 path = os.path.join(conf.folderPath,f)
 
                 # Create & run a new thread to process the image
-                t = Thread(target = process, args = (path,))
+                t = Thread(target = processor.process, args = (path,))
                 threads.append(t)
                 t.start()
 
