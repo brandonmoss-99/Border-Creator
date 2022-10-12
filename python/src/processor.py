@@ -34,6 +34,21 @@ def calculateBorderSize(conf, width, height) -> int:
         return int(height * (conf.borderAmount) * 0.01) if width >= height else int(width * (conf.borderAmount) * 0.01)
 
 
+def getExtension(f: str) -> str:
+    '''
+    Return the extension name of a file
+
+        Parameters:
+            f (str): The file to extract the extension from
+        
+        Returns:
+            extension (str): The extension name of the file
+    '''
+    nameSplit = f.rsplit('.', 1)
+    # Check the file is not a directory (with no extension)
+    return nameSplit[1] if len(nameSplit) > 1 else ""
+
+
 def processFile(conf):
     process(conf.filePath, conf)
 
@@ -48,11 +63,7 @@ def processDir(conf):
     # formats, process it
     osDirPath = os.path.abspath(conf.dirPath)
     for f in os.listdir(osDirPath):
-        nameSplit = f.rsplit('.', 1)
-        ext = ""
-        # Check the file is not a directory (with no extension)
-        if(len(nameSplit) > 1):
-            ext = nameSplit[1]
+        ext = getExtension(f)
         
         if ext.upper() in supportedFormats:
             # Make sure path is in an OS friendly format
