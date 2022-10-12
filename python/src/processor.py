@@ -11,18 +11,17 @@ def process(path, conf):
     print(f"Processing {osPath}")
     # Separate filename from extension
     fNameSplit = osPath.rsplit('.', 1)
-    filename = fNameSplit[0]
-    ext = fNameSplit[1]
+    newFilename = f"{fNameSplit[0]}_border.{fNameSplit[1]}"
 
     # Open the image and do the processing
-    with Image(filename = osPath) as toProcess:
-        width = toProcess.width
-        height = toProcess.height
-
-        # Add the border, save the image with _border in the filename
-        borderSize = calculateBorderSize(conf, width, height)
-        toProcess.border(color = Color(conf.colour), width = borderSize, height = borderSize)
-        toProcess.save(filename = filename + "_border." + ext)
+    try:
+        with Image(filename = osPath) as toProcess:
+            # Add the border, save the new image
+            borderSize = calculateBorderSize(conf, toProcess.width, toProcess.height)
+            toProcess.border(color = Color(conf.colour), width = borderSize, height = borderSize)
+            toProcess.save(filename = newFilename)
+    except Exception as e:
+        print(f"Couldn't process {osPath} - {e}")
 
 
 def calculateBorderSize(conf, width, height) -> int:
