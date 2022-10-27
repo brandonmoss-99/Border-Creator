@@ -1,7 +1,7 @@
 name: Run tests
 
 on:
-  commit:
+  push:
 
 jobs:
   UnitTest:
