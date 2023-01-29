@@ -34,6 +34,17 @@ class Test_createConfig(unittest.TestCase):
 
         self.assertEqual(parsedConf.borderAmount, 5)
 
+    def test_borderAmount_float(self):
+        conf = {"file": "test.jpg", "border": 10.5, "colour": "black", "useLong": True}
+        parsedConf = config.Config(conf)
+
+        self.assertEqual(parsedConf.borderAmount, 10.5)
+    
+    def test_borderAmount_floatUnderOne(self):
+        conf = {"file": "test.jpg", "border": 0.5, "colour": "black", "useLong": True}
+        parsedConf = config.Config(conf)
+
+        self.assertEqual(parsedConf.borderAmount, 0.5)
 
     def test_colour(self):
         conf = {"file": "test.jpg", "border": 10, "colour": "black", "useLong": True}

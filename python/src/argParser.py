@@ -12,7 +12,7 @@ def createConfig(argv):
             elif opt in ['-F']:
                 cParams["dir"] = arg
             elif opt in ['-b']:
-                cParams["border"] = int(arg)
+                cParams["border"] = float(arg)
             elif opt in ['-c']:
                 cParams["colour"] = arg
             elif opt in ['-l']:
