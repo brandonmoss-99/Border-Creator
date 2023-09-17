@@ -6,4 +6,5 @@ class Config:
         self.colour: str = cParams.get("colour", "white")
         self.ratio: str = cParams.get("ratio", None)
         self.useLong: bool = cParams.get("useLong", False)
+        self.resize: str = cParams.get("resize", None)
         
