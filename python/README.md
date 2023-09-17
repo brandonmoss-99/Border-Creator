@@ -16,6 +16,8 @@ Run the script as `python borderCreator.py` or `python3 borderCreator.py`, with 
 
 `-c <colour>`: Colour to use on the border, either as a word "cyan", or a hex code "#00ffff"
 
+`-o <size>`: The output size of the longest edge, in pixels, 1024, 2048, etc
+
 `-l`: Use the long edge instead for the % calculation
 
 `-h`: Display the help message
@@ -40,4 +42,9 @@ Add a border of colour `#00ff55` to a single image, that's 5% of the long edge, 
 Add a border of colour `#00ff55` to a single image, that's 5% of the long edge, to every edge. Extend the borders to fit a 1x1 (square) aspect ratio:
 ```bash
 ./addBorder.sh -f image.jpg -b 5 -c "#00ff55" -l -r 1x1
+```
+
+Add a border of colour `#00ff55` to a single image, that's 5% of the long edge, to every edge. Extend the borders to fit a 5x4 aspect ratio, and then resize so the output is 2048px on the longest side (preserving the existing 5x4 aspect ratio)
+```bash
+./addBorder.sh -f image.jpg -b 5 -c "#00ff55" -l -r 5x4 -o 2048
 ```

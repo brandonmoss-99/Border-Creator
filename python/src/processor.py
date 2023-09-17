@@ -19,6 +19,11 @@ def process(path, conf):
             # Add the border, save the new image
             borderSize = calculateBorderSize(conf, toProcess.width, toProcess.height)
             toProcess.border(color = Color(conf.colour), width = borderSize[0], height = borderSize[1])
+
+            # Resize the output image, if specified
+            if conf.resize != None:
+                toProcess.transform(resize=f'{conf.resize}x{conf.resize}')
+
             toProcess.save(filename = newFilename)
     except Exception as e:
         print(f"Couldn't process {osPath} - {e}")

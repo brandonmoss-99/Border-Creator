@@ -11,6 +11,8 @@ Usage: borderCreator<extension> [<options>]
                     as <width>x<height> - 4x5, 3x1, etc
 -c <colour>         Colour to use on the border, either as a word
                     "cyan", or a hex code "#00ffff"
+-o <size>           The output size of the longest edge, in pixels (preserving 
+                    the aspect ratio)
 -l                  Use the long edge instead for the % calculation
 -h                  Display this help message
 ''')
