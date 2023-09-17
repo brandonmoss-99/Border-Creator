@@ -12,6 +12,8 @@ Run the script as `python borderCreator.py` or `python3 borderCreator.py`, with 
 
 `-b <amount>`: How large a border to add, in % of the image size. Defaults to 5% of the short edge
 
+`-r <amount>`: The ratio to extend the borders to fit (ensuring the borders don't shrink below the specified border amount), as \<width>x\<height>, 5x4, 1x1, etc
+
 `-c <colour>`: Colour to use on the border, either as a word "cyan", or a hex code "#00ffff"
 
 `-l`: Use the long edge instead for the % calculation
@@ -33,4 +35,9 @@ python borderCreator.py -F ../test -b 15 -c black -l
 Add a border of colour `#00ff55` to a single image, that's 5% of the long edge, to every edge:
 ```bash
 ./addBorder.sh -f image.jpg -b 5 -c "#00ff55" -l
+```
+
+Add a border of colour `#00ff55` to a single image, that's 5% of the long edge, to every edge. Extend the borders to fit a 1x1 (square) aspect ratio:
+```bash
+./addBorder.sh -f image.jpg -b 5 -c "#00ff55" -l -r 1x1
 ```
