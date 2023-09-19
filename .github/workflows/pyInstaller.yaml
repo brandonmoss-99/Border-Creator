@@ -16,16 +16,16 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'pip' # cache pip dependencies
-      - run: pip install -r python/requirements.txt
+      - run: pip install -r requirements.txt
       - run: pip install pyinstaller
       
       - name: Build Executable
-        run: pyinstaller python/src/borderCreator.py -F --distpath python/src/dist/linux/
+        run: pyinstaller src/borderCreator.py -F --distpath src/dist/linux/
       
       - uses: actions/upload-artifact@v3
         with:
           name: Linux release
-          path: python/src/dist/linux/*
+          path: src/dist/linux/*
     
   createWindowsExecutable:
     name: Create Windows Executable
@@ -37,13 +37,13 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'pip' # cache pip dependencies
-      - run: pip install -r python/requirements.txt
+      - run: pip install -r requirements.txt
       - run: pip install pyinstaller
       
       - name: Build Executable
-        run: pyinstaller python/src/borderCreator.py -F --distpath python/src/dist/windows/
+        run: pyinstaller src/borderCreator.py -F --distpath src/dist/windows/
       
       - uses: actions/upload-artifact@v3
         with:
           name: Windows release
-          path: python/src/dist/windows/*
+          path: src/dist/windows/*
