@@ -9,9 +9,6 @@ import os
 def process(path, conf):
     osPath = os.path.abspath(path)
     print(f"Processing {osPath}")
-    # Separate filename from extension
-    fNameSplit = osPath.rsplit('.', 1)
-    newFilename = f"{fNameSplit[0]}_border.{fNameSplit[1]}"
 
     # Open the image and do the processing
     try:
@@ -24,9 +21,20 @@ def process(path, conf):
             if conf.resize != None:
                 toProcess.transform(resize=f'{conf.resize}x{conf.resize}')
 
-            toProcess.save(filename = newFilename)
+            toProcess.save(filename = generateNewFilePath(conf, osPath))
     except Exception as e:
         print(f"Couldn't process {osPath} - {e}")
+
+
+def generateNewFilePath(conf, originalPath) -> str:
+    # Separate filename from extension
+    fNameSplit = originalPath.rsplit('.', 1)
+
+    borderText = f"_{conf.borderAmount}pct{'l' if conf.useLong else 's'}-border" if conf.borderAmount != None else ""
+    ratioText = f"_{int(conf.ratio.split('x')[0])}x{int(conf.ratio.split('x')[1])}" if conf.ratio != None else ""
+    resizeText = f"_{conf.resize}px" if conf.resize != None else ""
+
+    return f"{fNameSplit[0]}{borderText}{ratioText}{resizeText}.{fNameSplit[1]}"
 
 
 def calculateBorderSize(conf, width, height):

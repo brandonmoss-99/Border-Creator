@@ -60,6 +60,40 @@ class Test_paddingCalculator(unittest.TestCase):
         c_1 = Config({"file": "test.jpg", "border": 10, "useLong": True, "ratio": "4x5"})
         self.assertEqual(processor.calculateBorderSize(c_1, 1000, 2000), (460,200)) # 2400x1920
 
+class Test_filepathGenerator(unittest.TestCase):
+    
+    orgFPath = "/usr/someone/images/test.jpg"
+
+    def setUp(self):
+        pass
+
+    def test_floatShortBorder(self):
+        c_1 = Config({"file": "test.jpg", "border": 0.5})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_0.5pcts-border.jpg")
+
+    def test_floatLongBorder(self):
+        c_1 = Config({"file": "test.jpg", "border": 0.5, "useLong": True})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_0.5pctl-border.jpg")
+
+    def test_IntShortBorder(self):
+        c_1 = Config({"file": "test.jpg", "border": 10})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_10pcts-border.jpg")
+
+    def test_IntLongBorder(self):
+        c_1 = Config({"file": "test.jpg", "border": 10, "useLong": True})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_10pctl-border.jpg")
+
+    def test_IntShortBorderRatio(self):
+        c_1 = Config({"file": "test.jpg", "border": 10, "ratio": "5x4"})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_10pcts-border_5x4.jpg")
+
+    def test_IntShortBorderResize(self):
+        c_1 = Config({"file": "test.jpg", "border": 10, "resize": "2048"})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_10pcts-border_2048px.jpg")
+
+    def test_IntShortBorderRatioResize(self):
+        c_1 = Config({"file": "test.jpg", "border": 10, "ratio": "5x4", "resize": "2048"})
+        self.assertEqual(processor.generateNewFilePath(c_1, self.orgFPath), "/usr/someone/images/test_10pcts-border_5x4_2048px.jpg")
 
 class Test_extensionParser(unittest.TestCase):
     def setUp(self):
