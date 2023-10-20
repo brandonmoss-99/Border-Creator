@@ -13,6 +13,8 @@ Usage: borderCreator<extension> [<options>]
                     "cyan", or a hex code "#00ffff"
 -o <size>           The output size of the longest edge, in pixels (preserving 
                     the aspect ratio)
+-a <amount>         How much Arc (rounding) to apply to the original image
+                    corners, in % of the image size
 -l                  Use the long edge instead for the % calculation
 -h                  Display this help message
 ''')

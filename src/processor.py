@@ -1,5 +1,6 @@
 from wand.image import Image
 from wand.color import Color
+from wand.drawing import Drawing
 from wand.version import formats
 
 from threading import Thread
@@ -13,6 +14,11 @@ def process(path, conf):
     # Open the image and do the processing
     try:
         with Image(filename = osPath) as toProcess:
+
+            # Round the image corners first, if specified
+            if conf.rounded != None:
+                roundCorners(conf, toProcess)
+
             # Add the border, save the new image
             borderSize = calculateBorderSize(conf, toProcess.width, toProcess.height)
             toProcess.border(color = Color(conf.colour), width = borderSize[0], height = borderSize[1])
@@ -31,10 +37,11 @@ def generateNewFilePath(conf, originalPath) -> str:
     fNameSplit = originalPath.rsplit('.', 1)
 
     borderText = f"_{conf.borderAmount}pct{'l' if conf.useLong else 's'}-border" if conf.borderAmount != None else ""
+    arcText = f"_{conf.rounded}pct-arc" if conf.rounded != None else ""
     ratioText = f"_{int(conf.ratio.split('x')[0])}x{int(conf.ratio.split('x')[1])}" if conf.ratio != None else ""
     resizeText = f"_{conf.resize}px" if conf.resize != None else ""
 
-    return f"{fNameSplit[0]}{borderText}{ratioText}{resizeText}.{fNameSplit[1]}"
+    return f"{fNameSplit[0]}{borderText}{arcText}{ratioText}{resizeText}.{fNameSplit[1]}"
 
 
 def calculateBorderSize(conf, width, height):
@@ -101,6 +108,55 @@ def calculatePadding(conf, borderSize, width, height):
             toPad = (img_longer_dim_padded - img_border_min_h) / 2
             return int(borderSize), int(toPad + borderSize)
     
+
+def roundCorners(conf, image):
+    radiusAmount = 0
+
+    # Set the radius amount depending on if useLong is true
+    if conf.useLong:
+        radiusAmount = image.width * (conf.rounded/100) if image.width >= image.height else image.height * (conf.rounded/100)
+    else:
+        radiusAmount = image.height * (conf.rounded/100) if image.width >= image.height else image.width * (conf.rounded/100)
+
+
+    # Create a new blank image of the same size as the photo to process
+    # to manipulate as a mask
+    with Image(width=image.width,
+            height=image.height,
+            background=Color("white")) as mask:
+
+        # Create a new mask, using a rectangle with a rounded radius
+        with Drawing() as ctx:
+            ctx.fill_color = Color("black")
+            ctx.rectangle(left=0,
+                        top=0,
+                        width=mask.width,
+                        height=mask.height,
+                        radius=radiusAmount)
+            ctx.draw(mask)
+    
+        # Perform a screen composite on all image channels, of the
+        # original image and the new mask we just made
+        image.composite_channel('all_channels', mask, 'screen')
+
+    
+    # Perform a 2nd pass, doing the same but replacing with the user specified
+    # background colour, rather than the white the initial mask produces, and
+    # using a multiple composite
+    with Image(width=image.width,
+            height=image.height,
+            background=Color(conf.colour)) as mask:
+
+        with Drawing() as ctx:
+            ctx.fill_color = Color("white")
+            ctx.rectangle(left=0,
+                        top=0,
+                        width=mask.width,
+                        height=mask.height,
+                        radius=radiusAmount)
+            ctx.draw(mask)
+
+        image.composite_channel('all_channels', mask, 'multiply')
 
 
 def getExtension(f: str) -> str:
