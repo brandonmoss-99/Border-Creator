@@ -7,4 +7,5 @@ class Config:
         self.ratio: str = cParams.get("ratio", None)
         self.useLong: bool = cParams.get("useLong", False)
         self.resize: str = cParams.get("resize", None)
+        self.rounded: str = cParams.get("rounded", None)
         
