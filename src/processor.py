@@ -118,45 +118,22 @@ def roundCorners(conf, image):
     else:
         radiusAmount = image.height * (conf.rounded/100) if image.width >= image.height else image.width * (conf.rounded/100)
 
+    # Perform 2 passes, first masking out the corners with white, then 
+    # replacing that white with the user specified background colour
+    for roundPass in [("white", "black", "screen"), (conf.colour, "white", "multiply")]:
+        # Create a new blank image of the same size as the photo to process
+        # to manipulate as a mask
+        with Image(width=image.width, height=image.height, background=Color(roundPass[0])) as mask:
 
-    # Create a new blank image of the same size as the photo to process
-    # to manipulate as a mask
-    with Image(width=image.width,
-            height=image.height,
-            background=Color("white")) as mask:
-
-        # Create a new mask, using a rectangle with a rounded radius
-        with Drawing() as ctx:
-            ctx.fill_color = Color("black")
-            ctx.rectangle(left=0,
-                        top=0,
-                        width=mask.width,
-                        height=mask.height,
-                        radius=radiusAmount)
-            ctx.draw(mask)
-    
-        # Perform a screen composite on all image channels, of the
-        # original image and the new mask we just made
-        image.composite_channel('all_channels', mask, 'screen')
-
-    
-    # Perform a 2nd pass, doing the same but replacing with the user specified
-    # background colour, rather than the white the initial mask produces, and
-    # using a multiple composite
-    with Image(width=image.width,
-            height=image.height,
-            background=Color(conf.colour)) as mask:
-
-        with Drawing() as ctx:
-            ctx.fill_color = Color("white")
-            ctx.rectangle(left=0,
-                        top=0,
-                        width=mask.width,
-                        height=mask.height,
-                        radius=radiusAmount)
-            ctx.draw(mask)
-
-        image.composite_channel('all_channels', mask, 'multiply')
+            # Create a new mask, using a rectangle with a rounded radius
+            with Drawing() as ctx:
+                ctx.fill_color = Color(roundPass[1])
+                ctx.rectangle(left=0, top=0, width=mask.width, height=mask.height, radius=radiusAmount)
+                ctx.draw(mask)
+        
+            # Perform a screen composite on all image channels, of the
+            # original image and the new mask we just made
+            image.composite_channel('all_channels', mask, roundPass[2])
 
 
 def getExtension(f: str) -> str:
