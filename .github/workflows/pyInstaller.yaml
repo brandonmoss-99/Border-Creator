@@ -22,7 +22,7 @@ jobs:
       - name: Build Executable
         run: pyinstaller src/borderCreator.py -F --distpath src/dist/linux/
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Linux release
           path: src/dist/linux/*
@@ -43,7 +43,7 @@ jobs:
       - name: Build Executable
         run: pyinstaller src/borderCreator.py -F --distpath src/dist/windows/
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Windows release
           path: src/dist/windows/*
